@@ -20,7 +20,7 @@ public class TaskUseCase {
         return service.getAllTasks();
     }
 
-    public Optional<Task> getTaskById(Long id) {
+    public Optional<Task> getTaskById(String id) {
         return service.getTask(id);
     }
 

@@ -20,7 +20,7 @@ public class TaskService {
         return repository.findAll();
     }
 
-    public Optional<Task> getTask(Long id) {
+        public Optional<Task> getTask(String id) {
         return repository.findById(id);
     }
 

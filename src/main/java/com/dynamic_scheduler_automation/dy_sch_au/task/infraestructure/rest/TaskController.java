@@ -2,6 +2,8 @@ package com.dynamic_scheduler_automation.dy_sch_au.task.infraestructure.rest;
 
 import com.dynamic_scheduler_automation.dy_sch_au.task.application.TaskUseCase;
 import com.dynamic_scheduler_automation.dy_sch_au.task.domain.model.Task;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,12 +24,12 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public Task getById(@PathVariable Long id) {
+    public Task getById(@PathVariable String id) {
         return useCase.getTaskById(id).orElseThrow();
     }
 
     @PostMapping
-    public Task create(@RequestBody Task task) {
-        return useCase.createTask(task);
+    public ResponseEntity<Task> create(@RequestBody Task task) {
+        return new ResponseEntity<Task>(useCase.createTask(task), HttpStatus.OK);
     }
 }

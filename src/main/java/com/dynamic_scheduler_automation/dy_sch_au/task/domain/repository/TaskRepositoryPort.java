@@ -11,7 +11,7 @@ public interface TaskRepositoryPort {
 
     Task save(Task task);
 
-    Optional<Task> findById(Long id);
+    Optional<Task> findById(String id);
 
     List<Task> findAll();
 

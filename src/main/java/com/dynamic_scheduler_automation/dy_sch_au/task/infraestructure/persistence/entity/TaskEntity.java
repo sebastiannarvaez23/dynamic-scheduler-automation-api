@@ -9,7 +9,7 @@ import java.util.UUID;
 public class TaskEntity {
 
     @Id
-    private Long id;
+    private String id;
 
     private String name;
 
