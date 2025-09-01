@@ -16,15 +16,15 @@ public class HistoryService {
         this.repository = repository;
     }
 
-    public History saveHistory(History history) {
-        return repository.save(history);
+    public List<History> getAllHistories() {
+        return repository.findAll();
     }
 
     public Optional<History> getHistory(Long id) {
         return repository.findById(id);
     }
 
-    public List<History> getAllHistories() {
-        return repository.findAll();
+    public History saveHistory(History history) {
+        return repository.save(history);
     }
 }

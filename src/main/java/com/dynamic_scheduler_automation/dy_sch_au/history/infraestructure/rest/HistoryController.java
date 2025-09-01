@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/histories")
+@RequestMapping("/api/history")
 public class HistoryController {
 
     private final HistoryUseCase useCase;
@@ -16,9 +16,9 @@ public class HistoryController {
         this.useCase = useCase;
     }
 
-    @PostMapping
-    public History create(@RequestBody History history) {
-        return useCase.createHistory(history);
+    @GetMapping
+    public List<History> listAll() {
+        return useCase.listHistories();
     }
 
     @GetMapping("/{id}")
@@ -26,8 +26,8 @@ public class HistoryController {
         return useCase.getHistoryById(id).orElseThrow();
     }
 
-    @GetMapping
-    public List<History> listAll() {
-        return useCase.listHistories();
+    @PostMapping
+    public History create(@RequestBody History history) {
+        return useCase.createHistory(history);
     }
 }

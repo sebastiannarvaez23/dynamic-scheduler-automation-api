@@ -10,21 +10,21 @@ import java.util.Optional;
 @Service
 public class HistoryUseCase {
 
-    private final HistoryService historyService;
+    private final HistoryService service;
 
-    public HistoryUseCase(HistoryService historyService) {
-        this.historyService = historyService;
-    }
-
-    public History createHistory(History history) {
-        return historyService.saveHistory(history);
-    }
-
-    public Optional<History> getHistoryById(Long id) {
-        return historyService.getHistory(id);
+    public HistoryUseCase(HistoryService service) {
+        this.service = service;
     }
 
     public List<History> listHistories() {
-        return historyService.getAllHistories();
+        return service.getAllHistories();
+    }
+
+    public Optional<History> getHistoryById(Long id) {
+        return service.getHistory(id);
+    }
+
+    public History createHistory(History history) {
+        return service.saveHistory(history);
     }
 }
