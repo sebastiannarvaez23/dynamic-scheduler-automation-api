@@ -27,4 +27,5 @@ public class HistoryUseCase {
     public History createHistory(History history) {
         return service.saveHistory(history);
     }
+
 }

@@ -14,6 +14,7 @@ import java.util.Optional;
 public class TaskRepositoryAdapter implements TaskRepositoryPort {
 
     private final TaskRepository repository;
+
     private final TaskMapper mapper;
 
     public TaskRepositoryAdapter(TaskRepository repository, TaskMapper mapper) {
@@ -28,7 +29,7 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
             TaskEntity saved = repository.save(entity);
             return mapper.toDomain(saved);
         } catch (DuplicateKeyException e) {
-            throw e; // se captura en el servicio o handler global
+            throw e;
         }
     }
 

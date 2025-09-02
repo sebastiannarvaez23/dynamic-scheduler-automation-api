@@ -32,6 +32,7 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<Task> create(@Valid @RequestBody Task task) {
-        return new ResponseEntity<Task>(useCase.createTask(task), HttpStatus.OK);
+        return new ResponseEntity<Task>(useCase.createTask(task), HttpStatus.CREATED);
     }
+
 }

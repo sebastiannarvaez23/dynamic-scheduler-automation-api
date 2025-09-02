@@ -1,7 +1,7 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.service;
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.model.History;
-import com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.persistence.repository.HistoryRepository;
+import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.port.HistoryRepositoryPort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.Optional;
 @Service
 public class HistoryService {
 
-    private final HistoryRepository repository;
+    private final HistoryRepositoryPort repository;
 
-    public HistoryService(HistoryRepository repository) {
+    public HistoryService(HistoryRepositoryPort repository) {
         this.repository = repository;
     }
 
@@ -27,4 +27,5 @@ public class HistoryService {
     public History saveHistory(History history) {
         return repository.save(history);
     }
+
 }

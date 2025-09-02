@@ -12,4 +12,5 @@ public class TaskBeanConfig {
     public TaskService taskService(TaskRepositoryPort repositoryPort) {
         return new TaskService(repositoryPort);
     }
+
 }
