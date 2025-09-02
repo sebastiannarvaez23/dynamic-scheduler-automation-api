@@ -1,6 +1,7 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.rest;
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.application.TaskUseCase;
+import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.NotSuchTaskException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public Task getById(@PathVariable String id) {
-        return useCase.getTaskById(id).orElseThrow();
+        return useCase.getTaskById(id).orElseThrow(() -> new NotSuchTaskException(id));
     }
 
     @PostMapping

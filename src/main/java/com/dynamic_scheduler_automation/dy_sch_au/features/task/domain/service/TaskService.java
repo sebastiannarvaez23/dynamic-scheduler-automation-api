@@ -1,6 +1,7 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.service;
 
-import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.exceptions.TaskAlreadyExistsException;
+import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.NotSuchTaskException;
+import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.TaskAlreadyExistsException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.mapper.TaskMapper;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.persistence.entity.TaskEntity;
@@ -9,6 +10,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
