@@ -20,7 +20,7 @@ public class HistoryUseCase {
         return service.getAllHistories();
     }
 
-    public Optional<History> getHistoryById(Long id) {
+    public Optional<History> getHistoryById(String id) {
         return service.getHistory(id);
     }
 

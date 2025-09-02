@@ -22,7 +22,7 @@ public class HistoryController {
     }
 
     @GetMapping("/{id}")
-    public History getById(@PathVariable Long id) {
+    public History getById(@PathVariable String id) {
         return useCase.getHistoryById(id).orElseThrow();
     }
 
