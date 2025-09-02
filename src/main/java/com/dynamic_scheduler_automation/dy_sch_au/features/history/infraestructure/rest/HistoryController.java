@@ -1,6 +1,7 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.rest;
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.application.HistoryUseCase;
+import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.ResponseHistoryDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.exceptions.NotSuchHistoryException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.model.History;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ public class HistoryController {
     }
 
     @GetMapping
-    public List<History> listAll() {
+    public List<ResponseHistoryDto> listAll() {
         return useCase.listHistories();
     }
 
@@ -32,7 +33,7 @@ public class HistoryController {
 
     @PostMapping
     public ResponseEntity<History> create(@Valid @RequestBody History history) {
-        return new ResponseEntity<>(useCase.createHistory(history), HttpStatus.CREATED) ;
+        return new ResponseEntity<>(useCase.createHistory(history), HttpStatus.CREATED);
     }
 
 }

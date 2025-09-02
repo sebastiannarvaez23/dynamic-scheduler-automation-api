@@ -17,5 +17,5 @@ public interface HistoryMapper {
     HistoryEntity toEntity(History history);
 
     List<History> toDomainList(List<HistoryEntity> historyEntities);
-    
+
 }

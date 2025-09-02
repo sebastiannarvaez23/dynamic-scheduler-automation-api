@@ -1,5 +1,6 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.history.application;
 
+import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.ResponseHistoryDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.model.History;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.service.HistoryService;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class HistoryUseCase {
         this.service = service;
     }
 
-    public List<History> listHistories() {
+    public List<ResponseHistoryDto> listHistories() {
         return service.getAllHistories();
     }
 
