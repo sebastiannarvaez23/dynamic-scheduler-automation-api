@@ -2,7 +2,6 @@ package com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestruct
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.exceptions.HistoryAlreadyExistsException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.exceptions.NotSuchHistoryException;
-import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.NotSuchTaskException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -3,9 +3,10 @@ package com.dynamic_scheduler_automation.dy_sch_au.features.history.application;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.ResponseHistoryDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.model.History;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.service.HistoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,8 +18,8 @@ public class HistoryUseCase {
         this.service = service;
     }
 
-    public List<ResponseHistoryDto> listHistories() {
-        return service.getAllHistories();
+    public Page<ResponseHistoryDto> listHistories(Pageable pageable) {
+        return service.getAllHistories(pageable);
     }
 
     public Optional<History> getHistoryById(String id) {

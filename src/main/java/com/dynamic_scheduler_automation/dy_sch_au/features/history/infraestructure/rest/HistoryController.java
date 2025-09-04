@@ -5,11 +5,12 @@ import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.Re
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.exceptions.NotSuchHistoryException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.model.History;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/history")
@@ -22,8 +23,8 @@ public class HistoryController {
     }
 
     @GetMapping
-    public List<ResponseHistoryDto> listAll() {
-        return useCase.listHistories();
+    public Page<ResponseHistoryDto> listAll(@PageableDefault(size = 10) Pageable pageable) {
+        return useCase.listHistories(pageable);
     }
 
     @GetMapping("/{id}")

@@ -7,10 +7,11 @@ import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.port.H
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.NotSuchTaskException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
 import com.dynamic_scheduler_automation.dy_sch_au.shared.ports.TaskApi;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,33 +27,31 @@ public class HistoryService {
         this.taskApi = taskApi;
     }
 
-    public List<ResponseHistoryDto> getAllHistories() {
-        List<History> historyList = repository.findAll();
+    public Page<ResponseHistoryDto> getAllHistories(Pageable pageable) {
+        Page<History> historyPage = repository.findAll(pageable);
 
-        return historyList.stream()
-                .map(history -> {
-                    Optional<Task> optionalTask = taskApi.getTaskById(history.getTaskId());
+        return historyPage.map(history -> {
+            Optional<Task> optionalTask = taskApi.getTaskById(history.getTaskId());
 
-                    TaskDto taskDto = optionalTask.map(task ->
-                            TaskDto.builder()
-                                    .id(task.getId())
-                                    .name(task.getName())
-                                    .description(task.getDescription())
-                                    .cronExpression(task.getCronExpression())
-                                    .active(task.getActive())
-                                    .build()
-                    ).orElse(null);
+            TaskDto taskDto = optionalTask.map(task ->
+                    TaskDto.builder()
+                            .id(task.getId())
+                            .name(task.getName())
+                            .description(task.getDescription())
+                            .cronExpression(task.getCronExpression())
+                            .active(task.getActive())
+                            .build()
+            ).orElse(null);
 
-                    return ResponseHistoryDto.builder()
-                            .id(history.getId())
-                            .task(taskDto)
-                            .executionDate(history.getExecutionDate())
-                            .executionHour(history.getExecutionHour())
-                            .executionTime(history.getExecutionTime())
-                            .status(history.getStatus())
-                            .build();
-                })
-                .collect(Collectors.toList());
+            return ResponseHistoryDto.builder()
+                    .id(history.getId())
+                    .task(taskDto)
+                    .executionDate(history.getExecutionDate())
+                    .executionHour(history.getExecutionHour())
+                    .executionTime(history.getExecutionTime())
+                    .status(history.getStatus())
+                    .build();
+        });
     }
 
     public Optional<History> getHistory(String id) {

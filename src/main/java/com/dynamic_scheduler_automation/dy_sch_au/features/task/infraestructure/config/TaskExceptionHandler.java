@@ -1,6 +1,5 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.config;
 
-import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.NotSuchTaskException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.TaskAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -3,8 +3,9 @@ package com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.service;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.TaskAlreadyExistsException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.port.TaskRepositoryPort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public class TaskService {
@@ -15,8 +16,8 @@ public class TaskService {
         this.repository = repository;
     }
 
-    public List<Task> getAllTasks() {
-        return repository.findAll();
+    public Page<Task> getAllTasks(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Optional<Task> getTask(String id) {
@@ -30,4 +31,5 @@ public class TaskService {
             throw new TaskAlreadyExistsException(task.getName());
         }
     }
+
 }

@@ -5,9 +5,10 @@ import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.port.Task
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.mapper.TaskMapper;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.persistence.entity.TaskEntity;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -23,6 +24,16 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
     }
 
     @Override
+    public Page<Task> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Task> findById(String id) {
+        return repository.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
     public Task save(Task task) {
         try {
             TaskEntity entity = mapper.toEntity(task);
@@ -33,13 +44,4 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
         }
     }
 
-    @Override
-    public Optional<Task> findById(String id) {
-        return repository.findById(id).map(mapper::toDomain);
-    }
-
-    @Override
-    public List<Task> findAll() {
-        return repository.findAll().stream().map(mapper::toDomain).toList();
-    }
 }
