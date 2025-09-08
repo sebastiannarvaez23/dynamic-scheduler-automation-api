@@ -45,4 +45,23 @@ public class TaskService {
         }
     }
 
+    public Task updateTask(String id, Task task) {
+        Optional<Task> existing = repository.findById(id);
+
+        if (existing.isEmpty()) {
+            throw new TaskAlreadyExistsException("Task with id " + id + " not found");
+        }
+
+        Task updated = new Task(
+                id,
+                task.getName(),
+                task.getDescription(),
+                task.getCronExpression(),
+                task.getActive(),
+                existing.get().getCreatedAt()
+        );
+
+        return repository.save(updated);
+    }
+
 }

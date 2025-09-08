@@ -4,9 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
+@AllArgsConstructor
 public class Task {
 
     private String id;
@@ -31,5 +35,7 @@ public class Task {
 
     @NotNull(message = "El estado activo/inactivo es obligatorio")
     private Boolean active;
+
+    private LocalDateTime createdAt;
 
 }

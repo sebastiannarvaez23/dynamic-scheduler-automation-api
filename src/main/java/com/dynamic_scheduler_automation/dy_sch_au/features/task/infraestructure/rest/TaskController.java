@@ -42,4 +42,12 @@ public class TaskController {
         return new ResponseEntity<Task>(useCase.createTask(task), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> update(
+            @PathVariable String id,
+            @Valid @RequestBody Task task
+    ) {
+        return ResponseEntity.ok(useCase.updateTask(id, task));
+    }
+
 }

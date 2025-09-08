@@ -34,4 +34,8 @@ public class TaskUseCase {
         return service.saveTask(task);
     }
 
+    public Task updateTask(String id, Task task) {
+        return service.updateTask(id, task);
+    }
+
 }
