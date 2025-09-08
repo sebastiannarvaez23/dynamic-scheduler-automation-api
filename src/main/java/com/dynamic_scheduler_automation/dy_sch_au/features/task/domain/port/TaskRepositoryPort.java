@@ -12,6 +12,10 @@ public interface TaskRepositoryPort {
 
     Optional<Task> findById(String id);
 
-    Page<Task> findAll(Pageable pageable);
+    Page<Task> findAllWithFilters(Pageable pageable,
+                                  String name,
+                                  String description,
+                                  String cronExpression,
+                                  Boolean active);
 
 }

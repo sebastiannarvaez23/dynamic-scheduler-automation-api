@@ -17,8 +17,13 @@ public class TaskUseCase {
         this.service = service;
     }
 
-    public Page<Task> listTasks(Pageable pageable) {
-        return service.getAllTasks(pageable);
+    public Page<Task> listTasks(
+            Pageable pageable,
+            String name,
+            String description,
+            String cronExpression,
+            Boolean active) {
+        return service.getAllTasks(pageable, name, description, cronExpression, active);
     }
 
     public Optional<Task> getTaskById(String id) {

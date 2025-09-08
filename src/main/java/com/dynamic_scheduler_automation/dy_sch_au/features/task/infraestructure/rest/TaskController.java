@@ -22,8 +22,14 @@ public class TaskController {
     }
 
     @GetMapping
-    public Page<Task> listAll(@PageableDefault(size = 10) Pageable pageable) {
-        return useCase.listTasks(pageable);
+    public Page<Task> listAll(
+            @PageableDefault(size = 10) Pageable pageable,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String cronExpression,
+            @RequestParam(required = false) Boolean active
+    ) {
+        return useCase.listTasks(pageable, name, description, cronExpression, active);
     }
 
     @GetMapping("/{id}")

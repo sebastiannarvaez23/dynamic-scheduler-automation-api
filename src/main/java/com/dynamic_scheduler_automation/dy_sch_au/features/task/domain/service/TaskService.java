@@ -18,13 +18,19 @@ public class TaskService {
         this.repository = repository;
     }
 
-    public Page<Task> getAllTasks(Pageable pageable) {
+    public Page<Task> getAllTasks(
+            Pageable pageable,
+            String name,
+            String description,
+            String cronExpression,
+            Boolean active
+    ) {
         Pageable sortedByCreatedAt = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by("createdAt").descending()
         );
-        return repository.findAll(sortedByCreatedAt);
+        return repository.findAllWithFilters(sortedByCreatedAt, name, description, cronExpression, active);
     }
 
     public Optional<Task> getTask(String id) {
