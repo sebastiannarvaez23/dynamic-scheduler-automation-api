@@ -3,9 +3,12 @@ package com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -24,5 +27,8 @@ public class TaskEntity {
     private String cronExpression;
 
     private Boolean active;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
 
 }

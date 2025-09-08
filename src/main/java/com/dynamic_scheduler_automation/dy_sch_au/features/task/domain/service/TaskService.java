@@ -4,7 +4,9 @@ import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exception
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.port.TaskRepositoryPort;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.Optional;
 
@@ -17,7 +19,12 @@ public class TaskService {
     }
 
     public Page<Task> getAllTasks(Pageable pageable) {
-        return repository.findAll(pageable);
+        Pageable sortedByCreatedAt = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("createdAt").descending()
+        );
+        return repository.findAll(sortedByCreatedAt);
     }
 
     public Optional<Task> getTask(String id) {
