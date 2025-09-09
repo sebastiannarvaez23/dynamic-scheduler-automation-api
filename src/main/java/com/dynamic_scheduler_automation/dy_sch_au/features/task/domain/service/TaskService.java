@@ -55,10 +55,12 @@ public class TaskService {
         }
 
         Task updated = existing.builder()
+                .id(existing.getId())
                 .name(task.getName())
                 .description(task.getDescription())
                 .cronExpression(task.getCronExpression())
                 .active(task.getActive())
+                .createdAt(existing.getCreatedAt())
                 .build();
 
         return repository.save(updated);
