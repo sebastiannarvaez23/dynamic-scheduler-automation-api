@@ -8,14 +8,16 @@ import java.util.Optional;
 
 public interface TaskRepositoryPort {
 
-    Task save(Task task);
-
-    Optional<Task> findById(String id);
-
     Page<Task> findAllWithFilters(Pageable pageable,
                                   String name,
                                   String description,
                                   String cronExpression,
                                   Boolean active);
+
+    Optional<Task> findById(String id);
+
+    Task save(Task task);
+
+    void softDelete(String id);
 
 }

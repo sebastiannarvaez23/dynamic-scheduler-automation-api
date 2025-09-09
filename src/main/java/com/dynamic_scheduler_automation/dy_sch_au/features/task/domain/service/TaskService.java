@@ -1,5 +1,6 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.service;
 
+import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.NotSuchTaskException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.TaskAlreadyExistsException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.port.TaskRepositoryPort;
@@ -46,22 +47,25 @@ public class TaskService {
     }
 
     public Task updateTask(String id, Task task) {
-        Optional<Task> existing = repository.findById(id);
+        Task existing = repository.findById(id)
+                .orElseThrow(() -> new NotSuchTaskException(id));
 
-        if (existing.isEmpty()) {
-            throw new TaskAlreadyExistsException("Task with id " + id + " not found");
+        if (existing.getDeletedAt() != null) {
+            throw new IllegalStateException("La tarea con " + id + " fue eliminada y no puede modificarse.");
         }
 
-        Task updated = new Task(
-                id,
-                task.getName(),
-                task.getDescription(),
-                task.getCronExpression(),
-                task.getActive(),
-                existing.get().getCreatedAt()
-        );
+        Task updated = existing.builder()
+                .name(task.getName())
+                .description(task.getDescription())
+                .cronExpression(task.getCronExpression())
+                .active(task.getActive())
+                .build();
 
         return repository.save(updated);
+    }
+
+    public void deleteTask(String id) {
+        repository.softDelete(id);
     }
 
 }

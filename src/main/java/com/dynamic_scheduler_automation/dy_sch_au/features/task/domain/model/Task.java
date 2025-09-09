@@ -5,12 +5,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class Task {
 
     private String id;
@@ -37,5 +39,7 @@ public class Task {
     private Boolean active;
 
     private LocalDateTime createdAt;
+
+    private LocalDateTime deletedAt;
 
 }

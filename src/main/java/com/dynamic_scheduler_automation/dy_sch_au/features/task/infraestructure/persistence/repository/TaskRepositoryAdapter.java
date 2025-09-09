@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
         List<Criteria> criteriaList = new ArrayList<>();
 
         if (name != null && !name.isEmpty()) {
-            criteriaList.add(Criteria.where("name").regex(name, "i")); // like (case-insensitive)
+            criteriaList.add(Criteria.where("name").regex(name, "i"));
         }
         if (description != null && !description.isEmpty()) {
             criteriaList.add(Criteria.where("description").regex(description, "i"));
@@ -55,6 +56,7 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
         }
 
         Criteria criteria = new Criteria();
+        criteriaList.add(Criteria.where("deletedAt").is(null));
         if (!criteriaList.isEmpty()) {
             criteria = new Criteria().andOperator(criteriaList.toArray(new Criteria[0]));
         }
@@ -73,7 +75,9 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
 
     @Override
     public Optional<Task> findById(String id) {
-        return repository.findById(id).map(mapper::toDomain);
+        return repository.findById(id)
+                .filter(entity -> entity.getDeletedAt() == null)
+                .map(mapper::toDomain);
     }
 
     @Override
@@ -84,6 +88,17 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
             return mapper.toDomain(saved);
         } catch (DuplicateKeyException e) {
             throw e;
+        }
+    }
+
+    @Override
+    public void softDelete(String id) {
+        Optional<TaskEntity> entityOpt = repository.findById(id);
+
+        if (entityOpt.isPresent()) {
+            TaskEntity entity = entityOpt.get();
+            entity.setDeletedAt(LocalDateTime.now());
+            repository.save(entity);
         }
     }
 

@@ -50,4 +50,10 @@ public class TaskController {
         return ResponseEntity.ok(useCase.updateTask(id, task));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        useCase.deleteTask(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

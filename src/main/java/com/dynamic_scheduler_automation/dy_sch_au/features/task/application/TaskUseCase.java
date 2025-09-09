@@ -38,4 +38,8 @@ public class TaskUseCase {
         return service.updateTask(id, task);
     }
 
+    public void deleteTask(String id) {
+        service.deleteTask(id);
+    }
+
 }

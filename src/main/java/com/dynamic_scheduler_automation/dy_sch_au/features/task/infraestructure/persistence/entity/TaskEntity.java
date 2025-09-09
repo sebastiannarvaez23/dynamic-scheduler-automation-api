@@ -31,4 +31,6 @@ public class TaskEntity {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    private LocalDateTime deletedAt;
+
 }
