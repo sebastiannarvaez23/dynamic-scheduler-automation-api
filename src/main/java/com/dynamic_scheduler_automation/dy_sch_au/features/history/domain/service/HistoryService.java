@@ -27,8 +27,8 @@ public class HistoryService {
         this.taskApi = taskApi;
     }
 
-    public Page<ResponseHistoryDto> getAllHistories(Pageable pageable) {
-        Page<History> historyPage = repository.findAll(pageable);
+    public Page<ResponseHistoryDto> getAllHistories(Pageable pageable, String taskId, String status, String executionDate) {
+        Page<History> historyPage = repository.findAllWithFilters(pageable, taskId, status, executionDate);
 
         return historyPage.map(history -> {
             Optional<Task> optionalTask = taskApi.getTaskById(history.getTaskId());

@@ -1,8 +1,8 @@
-package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.schedule.financiero;
+package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.schedule;
 
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.base.AbstractSchedule;
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.config.SchedulerConfig;
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.service.ExecutionService;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.base.AbstractSchedule;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.config.SchedulerConfig;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.service.ExecutionService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
 
@@ -13,13 +13,13 @@ public class PremiosSchedule extends AbstractSchedule {
 
     private static final String PROCESO_ID = "P0001";
     
-    private final Long empresaId;
+    private final String empresaId;
 
     public PremiosSchedule(
         SchedulerConfig schedulerConfig,
         @Qualifier("taskScheduler") TaskScheduler scheduler,
         ExecutionService executionService,
-        Long empresaId
+        String empresaId
     ) {
         super(schedulerConfig, scheduler, executionService);
         this.empresaId = empresaId;
@@ -31,7 +31,7 @@ public class PremiosSchedule extends AbstractSchedule {
     }
 
     @Override
-    public Long getEmpresaId() {
+    public String getEmpresaId() {
         return empresaId;
     }
 

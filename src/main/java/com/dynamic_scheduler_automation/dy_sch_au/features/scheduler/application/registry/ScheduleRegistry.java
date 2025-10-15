@@ -1,13 +1,14 @@
-package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.factory;
+package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.application.registry;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.base.AbstractSchedule;
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.config.SchedulerConfig;
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.schedule.financiero.PremiosSchedule;
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.service.ExecutionService;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.base.AbstractSchedule;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.config.SchedulerConfig;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.factory.ScheduleFactory;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.schedule.PremiosSchedule;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.service.ExecutionService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class ScheduleRegistry {
         );
     }
 
-    public Optional<AbstractSchedule> createSchedule(String procesoId, Long empresaId) {
+    public Optional<AbstractSchedule> createSchedule(String procesoId, String empresaId) {
         return Optional.ofNullable(scheduleFactories.get(procesoId))
                        .map(factory -> factory.create(empresaId));
     }

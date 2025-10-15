@@ -7,15 +7,23 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Task {
 
     private String id;
+
+    @NotBlank(message = "El código no puede estar vacío")
+    @NotNull(message = "El código es obligatorio")
+    @Size(max = 5, message = "El código no puede superar los 5 caracteres")
+    private String code;
 
     @NotBlank(message = "El nombre no puede estar vacío")
     @NotNull(message = "El nombre es obligatorio")
@@ -38,8 +46,9 @@ public class Task {
     @NotNull(message = "El estado activo/inactivo es obligatorio")
     private Boolean active;
 
+    private List<String> companies;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime deletedAt;
-
 }

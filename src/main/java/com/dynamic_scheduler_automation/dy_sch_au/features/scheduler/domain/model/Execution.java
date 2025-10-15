@@ -1,4 +1,4 @@
-package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.model;
+package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.model;
 
 import lombok.Builder;
 import lombok.Data;

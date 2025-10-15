@@ -23,13 +23,19 @@ public class HistoryController {
     }
 
     @GetMapping
-    public Page<ResponseHistoryDto> listAll(@PageableDefault(size = 10) Pageable pageable) {
-        return useCase.listHistories(pageable);
+    public Page<ResponseHistoryDto> listAll(
+            @PageableDefault(size = 10) Pageable pageable,
+            @RequestParam(required = false) String taskId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String executionDate
+    ) {
+        return useCase.listHistories(pageable, taskId, status, executionDate);
     }
 
     @GetMapping("/{id}")
     public History getById(@PathVariable String id) {
-        return useCase.getHistoryById(id).orElseThrow(() -> new NotSuchHistoryException(id));
+        return useCase.getHistoryById(id)
+                .orElseThrow(() -> new NotSuchHistoryException(id));
     }
 
     @PostMapping

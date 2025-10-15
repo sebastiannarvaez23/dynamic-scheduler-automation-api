@@ -20,10 +20,11 @@ public class TaskUseCase {
     public Page<Task> listTasks(
             Pageable pageable,
             String name,
+            String code,
             String description,
             String cronExpression,
             Boolean active) {
-        return service.getAllTasks(pageable, name, description, cronExpression, active);
+        return service.getAllTasks(pageable, code, name, description, cronExpression, active);
     }
 
     public Optional<Task> getTaskById(String id) {

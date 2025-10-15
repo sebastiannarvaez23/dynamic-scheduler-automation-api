@@ -35,6 +35,7 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
 
     @Override
     public Page<Task> findAllWithFilters(Pageable pageable,
+                                         String code,
                                          String name,
                                          String description,
                                          String cronExpression,
@@ -42,6 +43,9 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
 
         List<Criteria> criteriaList = new ArrayList<>();
 
+        if (code != null && !code.isEmpty()) {
+            criteriaList.add(Criteria.where("code").regex(name, "i"));
+        }
         if (name != null && !name.isEmpty()) {
             criteriaList.add(Criteria.where("name").regex(name, "i"));
         }

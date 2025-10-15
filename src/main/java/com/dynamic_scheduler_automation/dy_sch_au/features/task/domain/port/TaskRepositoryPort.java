@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface TaskRepositoryPort {
 
     Page<Task> findAllWithFilters(Pageable pageable,
+                                  String code,
                                   String name,
                                   String description,
                                   String cronExpression,

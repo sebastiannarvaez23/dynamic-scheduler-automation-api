@@ -1,10 +1,10 @@
-package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.base;
+package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.base;
 
 import java.util.concurrent.ScheduledFuture;
 
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.config.SchedulerConfig;
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.model.Execution;
-import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.service.ExecutionService;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.config.SchedulerConfig;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.model.Execution;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.service.ExecutionService;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
@@ -38,7 +38,7 @@ public abstract class AbstractSchedule implements ProgramableTask {
 
         if (cronExpresion != null) {
             future = scheduler.schedule(() -> {
-                Long empresa = getEmpresaId();
+                String empresa = getEmpresaId();
                 String proceso = getProcesoId();
 
                 try {
@@ -75,7 +75,7 @@ public abstract class AbstractSchedule implements ProgramableTask {
     
     public abstract String getProcesoId();
 
-    public abstract Long getEmpresaId();
+    public abstract String getEmpresaId();
 
     @Override
     public abstract void execute();

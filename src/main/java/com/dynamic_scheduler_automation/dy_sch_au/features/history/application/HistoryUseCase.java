@@ -18,8 +18,13 @@ public class HistoryUseCase {
         this.service = service;
     }
 
-    public Page<ResponseHistoryDto> listHistories(Pageable pageable) {
-        return service.getAllHistories(pageable);
+    public Page<ResponseHistoryDto> listHistories(
+            Pageable pageable,
+            String taskId,
+            String status,
+            String executionDate
+    ) {
+        return service.getAllHistories(pageable, taskId, status, executionDate);
     }
 
     public Optional<History> getHistoryById(String id) {

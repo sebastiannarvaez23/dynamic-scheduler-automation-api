@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
 import java.util.Optional;
 
 public class TaskService {
@@ -21,6 +22,7 @@ public class TaskService {
 
     public Page<Task> getAllTasks(
             Pageable pageable,
+            String code,
             String name,
             String description,
             String cronExpression,
@@ -31,7 +33,7 @@ public class TaskService {
                 pageable.getPageSize(),
                 Sort.by("createdAt").descending()
         );
-        return repository.findAllWithFilters(sortedByCreatedAt, name, description, cronExpression, active);
+        return repository.findAllWithFilters(sortedByCreatedAt, code, name, description, cronExpression, active);
     }
 
     public Optional<Task> getTask(String id) {
@@ -56,10 +58,12 @@ public class TaskService {
 
         Task updated = existing.builder()
                 .id(existing.getId())
+                .code(task.getCode())
                 .name(task.getName())
                 .description(task.getDescription())
                 .cronExpression(task.getCronExpression())
                 .active(task.getActive())
+                .companies(task.getCompanies())
                 .createdAt(existing.getCreatedAt())
                 .build();
 

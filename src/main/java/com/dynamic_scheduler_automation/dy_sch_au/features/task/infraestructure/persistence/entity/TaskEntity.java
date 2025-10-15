@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +21,9 @@ public class TaskEntity {
     private String id;
 
     @Indexed(unique = true)
+    private String code;
+
+    @Indexed(unique = true)
     private String name;
 
     private String description;
@@ -27,6 +31,8 @@ public class TaskEntity {
     private String cronExpression;
 
     private Boolean active;
+
+    private List<String> companies;
 
     @CreatedDate
     private LocalDateTime createdAt;

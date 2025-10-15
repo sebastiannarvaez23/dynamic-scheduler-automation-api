@@ -1,4 +1,4 @@
-package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.service;
+package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.listener;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;

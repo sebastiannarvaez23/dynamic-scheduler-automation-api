@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface HistoryRepositoryPort {
 
-    Page<History> findAll(Pageable pageable);
+    Page<History> findAllWithFilters(Pageable pageable, String taskId, String status, String executionDate);
 
     Optional<History> findById(String id);
 
