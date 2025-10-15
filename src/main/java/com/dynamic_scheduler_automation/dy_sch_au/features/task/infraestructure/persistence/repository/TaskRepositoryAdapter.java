@@ -44,7 +44,7 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
         List<Criteria> criteriaList = new ArrayList<>();
 
         if (code != null && !code.isEmpty()) {
-            criteriaList.add(Criteria.where("code").regex(name, "i"));
+            criteriaList.add(Criteria.where("code").regex(code, "i"));
         }
         if (name != null && !name.isEmpty()) {
             criteriaList.add(Criteria.where("name").regex(name, "i"));

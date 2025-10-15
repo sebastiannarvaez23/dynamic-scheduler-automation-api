@@ -19,8 +19,8 @@ public class TaskUseCase {
 
     public Page<Task> listTasks(
             Pageable pageable,
-            String name,
             String code,
+            String name,
             String description,
             String cronExpression,
             Boolean active) {
