@@ -23,6 +23,7 @@ public class Task {
     @NotBlank(message = "El código no puede estar vacío")
     @NotNull(message = "El código es obligatorio")
     @Size(max = 5, message = "El código no puede superar los 5 caracteres")
+    @Size(min = 5, message = "El código no puede ser menor a los 5 caracteres")
     private String code;
 
     @NotBlank(message = "El nombre no puede estar vacío")

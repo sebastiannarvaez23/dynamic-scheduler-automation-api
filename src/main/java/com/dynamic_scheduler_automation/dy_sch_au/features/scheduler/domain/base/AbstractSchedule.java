@@ -34,20 +34,20 @@ public abstract class AbstractSchedule implements ProgramableTask {
 	}
 
     public void programarTarea() {
-        String cronExpresion = schedulerConfig.getCronExpresion(getProcesoId(), getEmpresaId());
+        String cronExpresion = schedulerConfig.getCronExpresion(getProcess(), getCompanyId());
 
         if (cronExpresion != null) {
             future = scheduler.schedule(() -> {
-                String empresa = getEmpresaId();
-                String proceso = getProcesoId();
+                String empresa = getCompanyId();
+                String proceso = getProcess();
 
                 try {
                 	log.info("******************************************************");
                 	log.info("****** INICIO EJECUCIÓN PROCESO {}, EMPRESA {} *******", proceso, empresa);
                 	log.info("******************************************************");
-                	this.execution = executionService.iniciarEjecucion(proceso, empresa);
+                	this.execution = executionService.initExecution(proceso, empresa);
                     execute();
-                    executionService.finalizarEjecucion(this.execution);
+                    executionService.completeExecution(this.execution);
                     log.info("******************************************************");
                 	log.info("******** FIN EJECUCIÓN PROCESO {}, EMPRESA {} ********", proceso, empresa);
                 	log.info("******************************************************");
@@ -57,11 +57,11 @@ public abstract class AbstractSchedule implements ProgramableTask {
 
             }, new CronTrigger(cronExpresion));
             log.info("Tarea programada para proceso {} y empresa {} con cron {}",
-            		getProcesoId(), getEmpresaId(), cronExpresion
+                    getProcess(), getCompanyId(), cronExpresion
             );
         } else {
             log.warn("No se encontró expresión cron para proceso {} y empresa {}. No se programó la tarea.",
-            		getProcesoId(), getEmpresaId());
+                    getProcess(), getCompanyId());
         }
     }
 
@@ -69,13 +69,13 @@ public abstract class AbstractSchedule implements ProgramableTask {
         if (future != null && !future.isCancelled()) {
             future.cancel(true);
             log.info("Tarea cancelada para proceso {} y empresa {}",
-            		getProcesoId(), getEmpresaId());
+                    getProcess(), getCompanyId());
         }
     }
     
-    public abstract String getProcesoId();
+    public abstract String getProcess();
 
-    public abstract String getEmpresaId();
+    public abstract String getCompanyId();
 
     @Override
     public abstract void execute();

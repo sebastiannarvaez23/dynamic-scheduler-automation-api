@@ -17,6 +17,8 @@ public interface TaskRepositoryPort {
 
     Optional<Task> findById(String id);
 
+    Optional<Task> findByCode(String code);
+
     Task save(Task task);
 
     void softDelete(String id);

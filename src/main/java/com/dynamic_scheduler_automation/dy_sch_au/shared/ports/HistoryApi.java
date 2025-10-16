@@ -1,9 +1,9 @@
 package com.dynamic_scheduler_automation.dy_sch_au.shared.ports;
 
-import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
+import com.dynamic_scheduler_automation.dy_sch_au.shared.dtos.HistoryRecordDTO;
 
 public interface HistoryApi {
 
-    Task getTaskById(String id);
+    void createHistory(HistoryRecordDTO history);
 
 }

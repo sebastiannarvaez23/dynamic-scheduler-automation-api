@@ -11,28 +11,28 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class PremiosSchedule extends AbstractSchedule {
 
-    private static final String PROCESO_ID = "P0001";
+    private static final String PROCESS = "P0001";
     
-    private final String empresaId;
+    private final String companyId;
 
     public PremiosSchedule(
         SchedulerConfig schedulerConfig,
         @Qualifier("taskScheduler") TaskScheduler scheduler,
         ExecutionService executionService,
-        String empresaId
+        String companyId
     ) {
         super(schedulerConfig, scheduler, executionService);
-        this.empresaId = empresaId;
+        this.companyId = companyId;
     }
 
     @Override
-    public String getProcesoId() {
-        return PROCESO_ID;
+    public String getProcess() {
+        return PROCESS;
     }
 
     @Override
-    public String getEmpresaId() {
-        return empresaId;
+    public String getCompanyId() {
+        return companyId;
     }
 
     @Override
@@ -41,6 +41,6 @@ public class PremiosSchedule extends AbstractSchedule {
     			+ "Reejecución por procesos reversados: {}, "
     			+ "Procedimientos activos a ejecutar: {}, "
     			+ "Trazabilidad de la Ejecucion {}",
-    			getProcesoId(), getEmpresaId(), this.execution.getEstado());
+                getProcess(), getCompanyId(), this.execution.getEstado());
     }
 }

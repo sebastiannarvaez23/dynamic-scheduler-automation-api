@@ -85,6 +85,13 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
     }
 
     @Override
+    public Optional<Task> findByCode(String code) {
+        return repository.findByCode(code)
+                .filter(entity -> entity.getDeletedAt() == null)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Task save(Task task) {
         try {
             TaskEntity entity = mapper.toEntity(task);
