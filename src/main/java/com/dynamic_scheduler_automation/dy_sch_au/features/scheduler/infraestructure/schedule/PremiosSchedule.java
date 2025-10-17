@@ -8,6 +8,8 @@ import org.springframework.scheduling.TaskScheduler;
 
 import lombok.extern.log4j.Log4j2;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 @Log4j2
 public class PremiosSchedule extends AbstractSchedule {
 
@@ -37,17 +39,17 @@ public class PremiosSchedule extends AbstractSchedule {
 
     @Override
     public void execute() {
-    	log.info("Ejecutando proceso de premios {}. Empresa: {}, "
-    			+ "Reejecución por procesos reversados: {}, "
-    			+ "Procedimientos activos a ejecutar: {}, "
-    			+ "Trazabilidad de la Ejecucion {}",
+        log.info("Ejecutando proceso de premios {}. Empresa: {}, "
+                        + "Reejecución por procesos reversados: {}, "
+                        + "Procedimientos activos a ejecutar: {}, "
+                        + "Trazabilidad de la Ejecucion {}",
                 getProcess(), getCompanyId(), this.execution.getStatus());
         try {
-            Thread.sleep(3000L);
+            long delay = ThreadLocalRandom.current().nextLong(1000L, 15000L + 1);
+            Thread.sleep(delay);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // restablece el flag de interrupción
             log.warn("La ejecución del proceso {} fue interrumpida durante el delay", getProcess());
         }
-
     }
 }
