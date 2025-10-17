@@ -68,8 +68,6 @@ public class ReactiveSchedulerListener {
         task.setDescription(doc.getString("description"));
         task.setCronExpression(doc.getString("cronExpression"));
         task.setActive(doc.getBoolean("active", false));
-
-        // Convertimos la lista de companies correctamente
         task.setCompanies(mapCompanies(doc.get("companies")));
 
         return task;

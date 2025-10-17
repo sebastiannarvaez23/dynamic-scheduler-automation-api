@@ -41,6 +41,13 @@ public class PremiosSchedule extends AbstractSchedule {
     			+ "Reejecución por procesos reversados: {}, "
     			+ "Procedimientos activos a ejecutar: {}, "
     			+ "Trazabilidad de la Ejecucion {}",
-                getProcess(), getCompanyId(), this.execution.getEstado());
+                getProcess(), getCompanyId(), this.execution.getStatus());
+        try {
+            Thread.sleep(3000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restablece el flag de interrupción
+            log.warn("La ejecución del proceso {} fue interrumpida durante el delay", getProcess());
+        }
+
     }
 }

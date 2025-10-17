@@ -6,4 +6,6 @@ public interface HistoryApi {
 
     void createHistory(HistoryRecordDTO history);
 
+    void updateHistory(HistoryRecordDTO history);
+
 }

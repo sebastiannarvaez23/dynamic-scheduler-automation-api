@@ -27,4 +27,6 @@ public class HistoryEntity {
 
     private String status;
 
+    private String companyId;
+
 }

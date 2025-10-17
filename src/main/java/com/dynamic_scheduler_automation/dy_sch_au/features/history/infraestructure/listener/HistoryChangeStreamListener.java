@@ -7,6 +7,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
+import com.mongodb.client.model.changestream.FullDocument;
+import com.mongodb.client.model.changestream.OperationType;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
@@ -19,6 +21,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @Component
@@ -37,19 +40,35 @@ public class HistoryChangeStreamListener {
         sendInitialData();
 
         new Thread(() -> {
-            historyCollection.watch().forEach((ChangeStreamDocument<Document> change) -> {
-                Document doc = change.getFullDocument();
+            historyCollection.watch()
+                    .fullDocument(FullDocument.UPDATE_LOOKUP)
+                    .forEach((ChangeStreamDocument<Document> change) -> {
 
-                if (doc == null) {
-                    log.warn("⚠️ Documento de cambio nulo en ChangeStream.");
-                    return;
-                }
+                        OperationType opType = change.getOperationType();
+                        Document doc = change.getFullDocument();
 
-                ResponseHistoryDto response = buildResponseFromDocument(doc);
-                if (response != null) {
-                    messagingTemplate.convertAndSend("/topic/history/change", response);
-                }
-            });
+                        if (doc == null) {
+                            log.warn("⚠️ Documento de cambio nulo. Tipo: {}", opType);
+                            return;
+                        }
+
+                        ResponseHistoryDto response = buildResponseFromDocument(doc);
+
+                        if (response != null) {
+                            String eventType;
+                            switch (opType) {
+                                case INSERT -> eventType = "INSERT";
+                                case UPDATE, REPLACE -> eventType = "UPDATE";
+                                case DELETE -> eventType = "DELETE";
+                                default -> eventType = "UNKNOWN";
+                            }
+
+                            messagingTemplate.convertAndSend("/topic/history/change", Map.of(
+                                    "type", eventType,
+                                    "data", response
+                            ));
+                        }
+                    });
         }).start();
     }
 

@@ -39,20 +39,20 @@ public abstract class AbstractSchedule implements ProgramableTask {
         if (cronExpresion != null) {
             future = scheduler.schedule(() -> {
                 String empresa = getCompanyId();
-                String proceso = getProcess();
+                String process = getProcess();
 
                 try {
                 	log.info("******************************************************");
-                	log.info("****** INICIO EJECUCIÓN PROCESO {}, EMPRESA {} *******", proceso, empresa);
+                	log.info("****** INICIO EJECUCIÓN PROCESO {}, EMPRESA {} *******", process, empresa);
                 	log.info("******************************************************");
-                	this.execution = executionService.initExecution(proceso, empresa);
+                	this.execution = executionService.initExecution(process, empresa);
                     execute();
                     executionService.completeExecution(this.execution);
                     log.info("******************************************************");
-                	log.info("******** FIN EJECUCIÓN PROCESO {}, EMPRESA {} ********", proceso, empresa);
+                	log.info("******** FIN EJECUCIÓN PROCESO {}, EMPRESA {} ********", process, empresa);
                 	log.info("******************************************************");
                 } catch (Exception e) {
-                    log.error("Error ejecutando tarea {} para empresa {}", proceso, empresa, e);
+                    log.error("Error ejecutando tarea {} para empresa {}", process, empresa, e);
                 }
 
             }, new CronTrigger(cronExpresion));
