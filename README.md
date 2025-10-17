@@ -34,22 +34,49 @@ Se utilizan **Spring Boot y Project Reactor** para el manejo asíncrono de flujo
 
 ---
 
-## ⚙️ Configuración de MongoDB Reactivo
+## ⚙️ Configuración de MongoDB Reactivo y Replica Set
 
-Para habilitar el monitoreo reactivo de los cambios en la colección `task`, se debe ejecutar el siguiente comando al iniciar MongoDB.  
-Esto crea una colección de **oplogs** necesaria para los `Change Streams`.
+Para habilitar el monitoreo reactivo de los cambios en la colección `task`, es necesario que MongoDB esté corriendo como un **Replica Set**, incluso si solo tienes un nodo local. Esto permite que los **Change Streams** funcionen correctamente.
 
-### 📄 Archivo: `enableMongoChangeStream.bat`
+### 📄 Pasos para configurar un Replica Set en Windows
+
+1. **Cerrar cualquier instancia previa de MongoDB**:
 
 ```bat
-@echo off
-echo === Habilitando Change Stream para MongoDB ===
-mongosh --eval "rs.initiate()"
-echo Replica Set iniciado correctamente.
-pause
+taskkill /F /IM mongod.exe
 ```
 
-> 💡 **Nota:** Los `Change Streams` requieren que MongoDB esté corriendo como un **Replica Set**, incluso si solo tienes un nodo local.
+2. **Crear la carpeta de datos** (si no existe):
+
+```bat
+mkdir C:\data\db
+```
+
+3. **Iniciar MongoDB** (en una consola separada):
+
+```bat
+mongod --dbpath C:\data\db
+```
+
+4. **Abrir el shell de MongoDB**:
+
+```bat
+mongosh
+```
+
+5. **Inicializar el Replica Set**:
+
+```javascript
+rs.initiate()
+```
+
+6. **Verificar el estado del Replica Set**:
+
+```javascript
+rs.status()
+```
+
+> 💡 Esto debe mostrar que el nodo local es **PRIMARY** y que el Replica Set está activo, permitiendo el uso de Change Streams para la colección `task`.
 
 ---
 
