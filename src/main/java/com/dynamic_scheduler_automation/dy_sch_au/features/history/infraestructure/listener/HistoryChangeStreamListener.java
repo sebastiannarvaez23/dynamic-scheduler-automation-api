@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Log4j2
@@ -54,15 +55,24 @@ public class HistoryChangeStreamListener {
 
     private void sendInitialData() {
         List<ResponseHistoryDto> allHistories = new ArrayList<>();
-
+        List<ResponseHistoryDto> finalAllHistories = allHistories;
         historyCollection.find().forEach(doc -> {
             ResponseHistoryDto dto = buildResponseFromDocument(doc);
             if (dto != null) {
-                allHistories.add(dto);
+                finalAllHistories.add(dto);
             }
         });
 
-        log.info("📤 Enviando {} historiales iniciales al frontend.", allHistories.size());
+        allHistories.sort(Comparator
+                .comparing((ResponseHistoryDto h) -> h.getExecutionDate() == null ? 0L : h.getExecutionDate().toEpochDay())
+                .thenComparing(ResponseHistoryDto::getExecutionHour, Comparator.nullsLast(Comparator.naturalOrder()))
+                .reversed());
+
+        if (allHistories.size() > 10) {
+            allHistories = allHistories.subList(0, 10);
+        }
+
+        log.info("📤 Enviando {} historiales iniciales al frontend (ordenados por fecha y hora).", allHistories.size());
         messagingTemplate.convertAndSend("/topic/history/initial", allHistories);
     }
 
