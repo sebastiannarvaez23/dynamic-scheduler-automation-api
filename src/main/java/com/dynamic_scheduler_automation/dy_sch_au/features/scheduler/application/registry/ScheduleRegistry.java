@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.base.AbstractSchedule;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.service.SimulateExecutionService;
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.config.SchedulerConfig;
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.factory.ScheduleFactory;
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.schedule.PremiosSchedule;
@@ -21,10 +22,11 @@ public class ScheduleRegistry {
     public ScheduleRegistry(
     	@Lazy SchedulerConfig schedulerConfig,
         TaskScheduler taskScheduler,
-        ExecutionService executionService
+        ExecutionService executionService,
+        SimulateExecutionService simulateExecutionService
     ) {
         scheduleFactories.put("P0001", empresaId ->
-            new PremiosSchedule(schedulerConfig, taskScheduler, executionService, empresaId)
+            new PremiosSchedule(schedulerConfig, taskScheduler, executionService, empresaId, simulateExecutionService)
         );
     }
 

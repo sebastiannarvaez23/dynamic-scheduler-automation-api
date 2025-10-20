@@ -1,5 +1,6 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.persistence.entity;
 
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.model.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ public class HistoryEntity {
 
     private String executionTime;
 
-    private String status;
+    private Status status;
 
     private String companyId;
 

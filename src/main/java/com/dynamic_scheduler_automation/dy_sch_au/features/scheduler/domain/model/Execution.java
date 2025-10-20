@@ -18,7 +18,7 @@ public class Execution {
 
     private LocalTime endHour;
 
-    private String status;
+    private Status status;
 
     private String companyId;
 

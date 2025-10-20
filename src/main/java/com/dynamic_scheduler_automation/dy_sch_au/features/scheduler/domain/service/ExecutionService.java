@@ -1,6 +1,7 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.service;
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.model.Execution;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.model.Status;
 import com.dynamic_scheduler_automation.dy_sch_au.shared.dtos.HistoryRecordDTO;
 import com.dynamic_scheduler_automation.dy_sch_au.shared.ports.HistoryApi;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,9 @@ public class ExecutionService {
 
 	private final HistoryApi historyApi;
 	
-	private static final String INIT_STATUS = "I";
+	private static final Status INIT_STATUS = Status.RUNNING;
 	
-	private static final String COMPLETE_STATUS = "T";
+	private static final Status COMPLETE_STATUS = Status.COMPLETED;
 
 	public ExecutionService(HistoryApi historyApi) {
 		this.historyApi = historyApi;
@@ -40,7 +41,7 @@ public class ExecutionService {
 						LocalDate.now(),
 						now.toString(),
 						"00:00",
-						"EJECUTANDO",
+						execution.getStatus(),
 						companyId
 				)
 		);
@@ -49,9 +50,7 @@ public class ExecutionService {
 
 	public Execution completeExecution(Execution execution) {
 		LocalTime endTime = LocalTime.now();
-		execution.setStatus(COMPLETE_STATUS);
 		execution.setEndHour(endTime);
-
 		String duration = "00:00";
 		if (execution.getInitHour() != null) {
 			Duration time = Duration.between(execution.getInitHour(), endTime);
@@ -67,7 +66,7 @@ public class ExecutionService {
 						execution.getDate() != null ? execution.getDate() : LocalDate.now(),
 						endTime.toString(),
 						duration,
-						"FINALIZADO",
+						execution.getStatus(),
 						execution.getCompanyId()
 				)
 		);

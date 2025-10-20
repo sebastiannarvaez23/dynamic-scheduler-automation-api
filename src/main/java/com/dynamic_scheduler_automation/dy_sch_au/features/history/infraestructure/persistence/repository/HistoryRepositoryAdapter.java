@@ -5,9 +5,7 @@ import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.port.H
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.mapper.HistoryMapper;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.persistence.entity.HistoryEntity;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -55,7 +53,15 @@ public class HistoryRepositoryAdapter implements HistoryRepositoryPort {
             criteria = new Criteria().andOperator(criteriaList.toArray(new Criteria[0]));
         }
 
-        Query query = new Query(criteria).with(pageable);
+        Query query = new Query(criteria);
+
+        if (pageable.getSort().isUnsorted()) {
+            Sort defaultSort = Sort.by(Sort.Order.desc("executionDate"), Sort.Order.desc("executionHour"));
+            query.with(defaultSort);
+            query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        } else {
+            query.with(pageable);
+        }
 
         List<HistoryEntity> entities = mongoTemplate.find(query, HistoryEntity.class);
         long total = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), HistoryEntity.class);
@@ -66,7 +72,6 @@ public class HistoryRepositoryAdapter implements HistoryRepositoryPort {
 
         return new PageImpl<>(histories, pageable, total);
     }
-
 
     @Override
     public Optional<History> findById(String id) {
@@ -83,5 +88,4 @@ public class HistoryRepositoryAdapter implements HistoryRepositoryPort {
             throw e;
         }
     }
-
 }

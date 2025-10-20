@@ -1,6 +1,7 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.schedule;
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.base.AbstractSchedule;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.service.SimulateExecutionService;
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.infraestructure.config.SchedulerConfig;
 import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.service.ExecutionService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class PremiosSchedule extends AbstractSchedule {
 
     private static final String PROCESS = "P0001";
+
+    private final SimulateExecutionService simulateExecutionService;
     
     private final String companyId;
 
@@ -21,10 +24,12 @@ public class PremiosSchedule extends AbstractSchedule {
         SchedulerConfig schedulerConfig,
         @Qualifier("taskScheduler") TaskScheduler scheduler,
         ExecutionService executionService,
-        String companyId
+        String companyId,
+        SimulateExecutionService simulateExecutionService
     ) {
         super(schedulerConfig, scheduler, executionService);
         this.companyId = companyId;
+        this.simulateExecutionService = simulateExecutionService;
     }
 
     @Override
@@ -44,12 +49,6 @@ public class PremiosSchedule extends AbstractSchedule {
                         + "Procedimientos activos a ejecutar: {}, "
                         + "Trazabilidad de la Ejecucion {}",
                 getProcess(), getCompanyId(), this.execution.getStatus());
-        try {
-            long delay = ThreadLocalRandom.current().nextLong(1000L, 15000L + 1);
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // restablece el flag de interrupción
-            log.warn("La ejecución del proceso {} fue interrumpida durante el delay", getProcess());
-        }
+        simulateExecutionService.simulate(this.execution);
     }
 }

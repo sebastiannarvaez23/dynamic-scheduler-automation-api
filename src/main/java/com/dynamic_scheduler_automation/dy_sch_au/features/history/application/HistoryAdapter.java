@@ -2,6 +2,7 @@ package com.dynamic_scheduler_automation.dy_sch_au.features.history.application;
 
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.persistence.entity.HistoryEntity;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.persistence.repository.HistoryRepository;
+import com.dynamic_scheduler_automation.dy_sch_au.features.scheduler.domain.model.Status;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.persistence.entity.TaskEntity;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.infraestructure.persistence.repository.TaskRepository;
 import com.dynamic_scheduler_automation.dy_sch_au.shared.dtos.HistoryRecordDTO;
@@ -47,12 +48,11 @@ public class HistoryAdapter implements HistoryApi {
                 .map(TaskEntity::getId)
                 .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada: " + history.process()));
 
-        // Buscar el registro activo del día y empresa con estado EJECUTANDO
         Optional<HistoryEntity> optional = historyRepository.findByTaskIdAndCompanyIdAndExecutionDateAndStatus(
                 taskId,
                 history.companyId(),
                 history.executionDate(),
-                "EJECUTANDO"
+                Status.RUNNING.toString()
         );
 
         if (optional.isEmpty()) {
