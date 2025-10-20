@@ -25,4 +25,6 @@ public class ResponseHistoryDto {
 
     private String status;
 
+    private CompanyDto company;
+
 }

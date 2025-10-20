@@ -15,6 +15,10 @@ public class History {
     @NotNull(message = "La referencia a la tarea es obligatoria")
     private String taskId;
 
+    @NotBlank(message = "La referencia a la empresa no puede estar vacía")
+    @NotNull(message = "La referencia a la empresa es obligatoria")
+    private String companyId;
+
     @PastOrPresent(message = "La fecha de ejecución no puede ser en el futuro")
     @NotNull(message = "La fecha de ejecución es obligatoria")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

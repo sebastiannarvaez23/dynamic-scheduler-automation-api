@@ -1,11 +1,14 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.service;
 
+import com.dynamic_scheduler_automation.dy_sch_au.features.company.domain.model.Company;
+import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.CompanyDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.ResponseHistoryDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.TaskDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.model.History;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.port.HistoryRepositoryPort;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.exceptions.NotSuchTaskException;
 import com.dynamic_scheduler_automation.dy_sch_au.features.task.domain.model.Task;
+import com.dynamic_scheduler_automation.dy_sch_au.shared.ports.CompanyApi;
 import com.dynamic_scheduler_automation.dy_sch_au.shared.ports.TaskApi;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +25,12 @@ public class HistoryService {
 
     private final TaskApi taskApi;
 
-    public HistoryService(HistoryRepositoryPort repository, TaskApi taskApi) {
+    private final CompanyApi companyApi;
+
+    public HistoryService(HistoryRepositoryPort repository, TaskApi taskApi, CompanyApi companyApi) {
         this.repository = repository;
         this.taskApi = taskApi;
+        this.companyApi = companyApi;
     }
 
     public Page<ResponseHistoryDto> getAllHistories(Pageable pageable, String taskId, String status, String executionDate) {
@@ -43,6 +49,16 @@ public class HistoryService {
                             .build()
             ).orElse(null);
 
+            Optional<Company> optionalCompany = companyApi.getCompanyById(history.getCompanyId());
+            CompanyDto companyDto = optionalCompany.map(company ->
+                    CompanyDto.builder()
+                            .id(company.getId())
+                            .name(company.getName())
+                            .nit(company.getNit())
+                            .active(company.getActive())
+                            .build()
+            ).orElse(null);
+
             return ResponseHistoryDto.builder()
                     .id(history.getId())
                     .task(taskDto)
@@ -50,6 +66,7 @@ public class HistoryService {
                     .executionHour(history.getExecutionHour())
                     .executionTime(history.getExecutionTime())
                     .status(history.getStatus())
+                    .company(companyDto)
                     .build();
         });
     }
