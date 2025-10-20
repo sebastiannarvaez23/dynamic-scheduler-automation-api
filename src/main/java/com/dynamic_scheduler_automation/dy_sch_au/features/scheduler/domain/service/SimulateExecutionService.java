@@ -15,7 +15,7 @@ public class SimulateExecutionService {
             long delay = ThreadLocalRandom.current().nextLong(1000L, 15000L + 1);
             Thread.sleep(delay);
 
-            boolean isSuccess = ThreadLocalRandom.current().nextDouble() < 0.6;
+            boolean isSuccess = ThreadLocalRandom.current().nextDouble() < 0.7;
             execution.setStatus(isSuccess ? Status.COMPLETED : Status.FAILED);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

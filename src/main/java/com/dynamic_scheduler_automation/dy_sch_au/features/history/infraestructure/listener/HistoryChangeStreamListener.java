@@ -1,5 +1,6 @@
 package com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestructure.listener;
 
+import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.CompanyDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.ResponseHistoryDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.TaskDto;
 import com.mongodb.client.MongoClient;
@@ -18,10 +19,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 @Component
@@ -34,6 +32,7 @@ public class HistoryChangeStreamListener {
     private final MongoDatabase db = client.getDatabase("dyscau");
     private final MongoCollection<Document> historyCollection = db.getCollection("history");
     private final MongoCollection<Document> taskCollection = db.getCollection("tasks");
+    private final MongoCollection<Document> companyCollection = db.getCollection("companies");
 
     @PostConstruct
     public void startListening() {
@@ -97,17 +96,15 @@ public class HistoryChangeStreamListener {
 
     private ResponseHistoryDto buildResponseFromDocument(Document doc) {
         try {
+            // --- Task ---
             String taskId = doc.getString("taskId");
-            if (taskId == null || taskId.isBlank()) {
-                log.warn("⚠️ Documento de history sin taskId: {}", doc.toJson());
-                return null;
-            }
-
             Document taskDoc = null;
-            try {
-                taskDoc = taskCollection.find(new Document("_id", new ObjectId(taskId))).first();
-            } catch (IllegalArgumentException e) {
-                taskDoc = taskCollection.find(new Document("id", taskId)).first();
+            if (taskId != null) {
+                try {
+                    taskDoc = taskCollection.find(new Document("_id", new ObjectId(taskId))).first();
+                } catch (IllegalArgumentException e) {
+                    taskDoc = taskCollection.find(new Document("id", taskId)).first();
+                }
             }
 
             TaskDto taskDto;
@@ -129,9 +126,36 @@ public class HistoryChangeStreamListener {
                         .build();
             }
 
+            // --- Company ---
+            String companyId = doc.getString("companyId");
+            Document companyDoc = null;
+            if (companyId != null) {
+                try {
+                    companyDoc = companyCollection.find(new Document("_id", new ObjectId(companyId))).first();
+                } catch (IllegalArgumentException e) {
+                    companyDoc = companyCollection.find(new Document("id", companyId)).first();
+                }
+            }
+
+            CompanyDto companyDto;
+            if (companyDoc != null) {
+                companyDto = CompanyDto.builder()
+                        .id(companyDoc.getObjectId("_id").toString())
+                        .name(companyDoc.getString("name"))
+                        .nit(companyDoc.getString("nit"))
+                        .build();
+            } else {
+                companyDto = CompanyDto.builder()
+                        .id(companyId)
+                        .name("Desconocida")
+                        .nit("")
+                        .build();
+            }
+
             return ResponseHistoryDto.builder()
                     .id(doc.getObjectId("_id").toString())
                     .task(taskDto)
+                    .company(companyDto)
                     .executionDate(doc.getDate("executionDate") != null
                             ? doc.getDate("executionDate").toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                             : null)
