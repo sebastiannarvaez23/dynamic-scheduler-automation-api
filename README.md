@@ -82,7 +82,7 @@ rs.status()
 
 ## 🧰 Tecnologías Utilizadas
 
-- **Java 21**
+- **Java 17+**
 - **Spring Boot 3**
 - **Spring Data MongoDB Reactive**
 - **Project Reactor**
@@ -109,7 +109,7 @@ rs.status()
 
 ### Requisitos previos
 
-- Java 21+
+- Java 17+
 - Maven 3.9+
 - MongoDB 7.x
 - Puerto `8080` disponible
@@ -159,7 +159,7 @@ $ mvn spring-boot:run
 ## 👨‍💻 Autor
 
 **Sebastian Narvaez Lopera**  
-Ingeniero de Software — Codesa  
+Ingeniero de Software  
 📧 narvaezsebas8@gmail.com  
 🌐 [GitHub: sebastiannarvaez23](https://github.com/sebastiannarvaez23)
 
