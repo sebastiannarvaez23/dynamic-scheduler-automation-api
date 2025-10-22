@@ -68,7 +68,7 @@ public class HistoryChangeStreamListener {
 
                         messagingTemplate.convertAndSend("/topic/history/change", Map.of(
                                 "type", eventType,
-                                "data", response
+                                "content", response
                         ));
                     }
                 })).start();
