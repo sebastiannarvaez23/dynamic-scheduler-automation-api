@@ -3,8 +3,6 @@ package com.dynamic_scheduler_automation.dy_sch_au.features.history.infraestruct
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.CompanyDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.ResponseHistoryDto;
 import com.dynamic_scheduler_automation.dy_sch_au.features.history.domain.dto.TaskDto;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
@@ -14,7 +12,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -25,50 +22,56 @@ import java.util.*;
 @Component
 public class HistoryChangeStreamListener {
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    private final MongoClient client = MongoClients.create("mongodb://localhost:27017");
-    private final MongoDatabase db = client.getDatabase("dyscau");
-    private final MongoCollection<Document> historyCollection = db.getCollection("history");
-    private final MongoCollection<Document> taskCollection = db.getCollection("tasks");
-    private final MongoCollection<Document> companyCollection = db.getCollection("companies");
+    private final MongoDatabase db;
+
+    public HistoryChangeStreamListener(SimpMessagingTemplate messagingTemplate, MongoDatabase db) {
+        this.messagingTemplate = messagingTemplate;
+        this.db = db;
+    }
+
+    private MongoCollection<Document> historyCollection;
+    private MongoCollection<Document> taskCollection;
+    private MongoCollection<Document> companyCollection;
 
     @PostConstruct
     public void startListening() {
+        historyCollection = db.getCollection("history");
+        taskCollection = db.getCollection("tasks");
+        companyCollection = db.getCollection("companies");
+
         sendInitialData();
 
-        new Thread(() -> {
-            historyCollection.watch()
-                    .fullDocument(FullDocument.UPDATE_LOOKUP)
-                    .forEach((ChangeStreamDocument<Document> change) -> {
+        new Thread(() -> historyCollection.watch()
+                .fullDocument(FullDocument.UPDATE_LOOKUP)
+                .forEach((ChangeStreamDocument<Document> change) -> {
 
-                        OperationType opType = change.getOperationType();
-                        Document doc = change.getFullDocument();
+                    OperationType opType = change.getOperationType();
+                    Document doc = change.getFullDocument();
 
-                        if (doc == null) {
-                            log.warn("⚠️ Documento de cambio nulo. Tipo: {}", opType);
-                            return;
+                    if (doc == null) {
+                        log.warn("⚠️ Documento de cambio nulo. Tipo: {}", opType);
+                        return;
+                    }
+
+                    ResponseHistoryDto response = buildResponseFromDocument(doc);
+
+                    if (response != null) {
+                        String eventType;
+                        switch (opType) {
+                            case INSERT -> eventType = "INSERT";
+                            case UPDATE, REPLACE -> eventType = "UPDATE";
+                            case DELETE -> eventType = "DELETE";
+                            default -> eventType = "UNKNOWN";
                         }
 
-                        ResponseHistoryDto response = buildResponseFromDocument(doc);
-
-                        if (response != null) {
-                            String eventType;
-                            switch (opType) {
-                                case INSERT -> eventType = "INSERT";
-                                case UPDATE, REPLACE -> eventType = "UPDATE";
-                                case DELETE -> eventType = "DELETE";
-                                default -> eventType = "UNKNOWN";
-                            }
-
-                            messagingTemplate.convertAndSend("/topic/history/change", Map.of(
-                                    "type", eventType,
-                                    "data", response
-                            ));
-                        }
-                    });
-        }).start();
+                        messagingTemplate.convertAndSend("/topic/history/change", Map.of(
+                                "type", eventType,
+                                "data", response
+                        ));
+                    }
+                })).start();
     }
 
     private void sendInitialData() {
@@ -76,9 +79,7 @@ public class HistoryChangeStreamListener {
         List<ResponseHistoryDto> finalAllHistories = allHistories;
         historyCollection.find().forEach(doc -> {
             ResponseHistoryDto dto = buildResponseFromDocument(doc);
-            if (dto != null) {
-                finalAllHistories.add(dto);
-            }
+            if (dto != null) finalAllHistories.add(dto);
         });
 
         allHistories.sort(Comparator
@@ -86,9 +87,7 @@ public class HistoryChangeStreamListener {
                 .thenComparing(ResponseHistoryDto::getExecutionHour, Comparator.nullsLast(Comparator.naturalOrder()))
                 .reversed());
 
-        if (allHistories.size() > 10) {
-            allHistories = allHistories.subList(0, 10);
-        }
+        if (allHistories.size() > 10) allHistories = allHistories.subList(0, 10);
 
         log.info("📤 Enviando {} historiales iniciales al frontend (ordenados por fecha y hora).", allHistories.size());
         messagingTemplate.convertAndSend("/topic/history/initial", allHistories);
@@ -107,24 +106,21 @@ public class HistoryChangeStreamListener {
                 }
             }
 
-            TaskDto taskDto;
-            if (taskDoc != null) {
-                taskDto = TaskDto.builder()
-                        .id(taskDoc.getObjectId("_id").toString())
-                        .name(taskDoc.getString("name"))
-                        .description(taskDoc.getString("description"))
-                        .cronExpression(taskDoc.getString("cronExpression"))
-                        .active(taskDoc.getBoolean("active", false))
-                        .build();
-            } else {
-                taskDto = TaskDto.builder()
-                        .id(taskId)
-                        .name("Desconocido")
-                        .description("")
-                        .cronExpression("")
-                        .active(false)
-                        .build();
-            }
+            TaskDto taskDto = (taskDoc != null)
+                    ? TaskDto.builder()
+                    .id(taskDoc.getObjectId("_id").toString())
+                    .name(taskDoc.getString("name"))
+                    .description(taskDoc.getString("description"))
+                    .cronExpression(taskDoc.getString("cronExpression"))
+                    .active(taskDoc.getBoolean("active", false))
+                    .build()
+                    : TaskDto.builder()
+                    .id(taskId)
+                    .name("Desconocido")
+                    .description("")
+                    .cronExpression("")
+                    .active(false)
+                    .build();
 
             // --- Company ---
             String companyId = doc.getString("companyId");
@@ -137,20 +133,17 @@ public class HistoryChangeStreamListener {
                 }
             }
 
-            CompanyDto companyDto;
-            if (companyDoc != null) {
-                companyDto = CompanyDto.builder()
-                        .id(companyDoc.getObjectId("_id").toString())
-                        .name(companyDoc.getString("name"))
-                        .nit(companyDoc.getString("nit"))
-                        .build();
-            } else {
-                companyDto = CompanyDto.builder()
-                        .id(companyId)
-                        .name("Desconocida")
-                        .nit("")
-                        .build();
-            }
+            CompanyDto companyDto = (companyDoc != null)
+                    ? CompanyDto.builder()
+                    .id(companyDoc.getObjectId("_id").toString())
+                    .name(companyDoc.getString("name"))
+                    .nit(companyDoc.getString("nit"))
+                    .build()
+                    : CompanyDto.builder()
+                    .id(companyId)
+                    .name("Desconocida")
+                    .nit("")
+                    .build();
 
             return ResponseHistoryDto.builder()
                     .id(doc.getObjectId("_id").toString())
