@@ -9,10 +9,8 @@ import org.springframework.scheduling.TaskScheduler;
 
 import lombok.extern.log4j.Log4j2;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 @Log4j2
-public class PremiosSchedule extends AbstractSchedule {
+public class AwardsPaymentSchedule extends AbstractSchedule {
 
     private static final String PROCESS = "P0001";
 
@@ -20,7 +18,7 @@ public class PremiosSchedule extends AbstractSchedule {
     
     private final String companyId;
 
-    public PremiosSchedule(
+    public AwardsPaymentSchedule(
         SchedulerConfig schedulerConfig,
         @Qualifier("taskScheduler") TaskScheduler scheduler,
         ExecutionService executionService,
