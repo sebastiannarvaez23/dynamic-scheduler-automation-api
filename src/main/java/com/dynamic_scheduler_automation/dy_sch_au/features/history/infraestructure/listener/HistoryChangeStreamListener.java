@@ -26,6 +26,8 @@ public class HistoryChangeStreamListener {
 
     private final MongoDatabase db;
 
+    private static final ZoneId COT_ZONE = ZoneId.of("America/Bogota");
+
     public HistoryChangeStreamListener(SimpMessagingTemplate messagingTemplate, MongoDatabase db) {
         this.messagingTemplate = messagingTemplate;
         this.db = db;
@@ -150,7 +152,7 @@ public class HistoryChangeStreamListener {
                     .task(taskDto)
                     .company(companyDto)
                     .executionDate(doc.getDate("executionDate") != null
-                            ? doc.getDate("executionDate").toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                            ? doc.getDate("executionDate").toInstant().atZone(COT_ZONE).toLocalDate()
                             : null)
                     .executionHour(doc.getString("executionHour"))
                     .executionTime(doc.getString("executionTime"))

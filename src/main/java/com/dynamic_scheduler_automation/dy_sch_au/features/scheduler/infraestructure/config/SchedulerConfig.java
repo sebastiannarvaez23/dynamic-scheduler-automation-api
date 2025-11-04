@@ -13,7 +13,7 @@ public class SchedulerConfig {
 
     private final Map<String, String> cronExpresiones = new ConcurrentHashMap<>();
 
-    public void actualizarCron(String procesoId, List<String> companies, String nuevoCron) {
+    public void updateCron(String procesoId, List<String> companies, String nuevoCron) {
         if (procesoId == null || companies == null || companies.isEmpty() || nuevoCron == null) {
             log.warn("❌ No se puede actualizar CRON: datos incompletos -> procesoId={}, companies={}, cron={}",
                     procesoId, companies, nuevoCron);
@@ -35,11 +35,4 @@ public class SchedulerConfig {
         return cronExpresiones.get(procesoId + "_" + empresaId);
     }
 
-    public void eliminarTarea(String procesoId, List<String> companies) {
-        if (procesoId == null || companies == null) return;
-        for (String companyId : companies) {
-            cronExpresiones.remove(procesoId + "_" + companyId);
-            log.info("🗑 CRON eliminado para proceso={} empresa={}", procesoId, companyId);
-        }
-    }
 }

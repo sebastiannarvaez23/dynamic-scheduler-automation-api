@@ -55,7 +55,6 @@ public class ReactiveSchedulerListener {
 
     private Task mapDocumentToTask(Document doc) {
         Task task = new Task();
-        // Convertimos ObjectId a String para el ID
         Object idObj = doc.get("_id");
         if (idObj instanceof ObjectId objectId) {
             task.setId(objectId.toHexString());
@@ -96,7 +95,7 @@ public class ReactiveSchedulerListener {
             String key = task.getCode() + "_" + companyId;
             AbstractSchedule schedule = activeSchedules.remove(key);
             if (schedule != null) {
-                schedule.cancelarTarea();
+                schedule.cancelTask();
                 log.info("Schedule cancelado para {} - {}", task.getCode(), companyId);
             }
         }
@@ -110,14 +109,14 @@ public class ReactiveSchedulerListener {
 
             AbstractSchedule existing = activeSchedules.get(key);
             if (existing != null) {
-                existing.cancelarTarea();
+                existing.cancelTask();
             }
 
-            schedulerConfig.actualizarCron(task.getCode(), List.of(companyId), task.getCronExpression());
+            schedulerConfig.updateCron(task.getCode(), List.of(companyId), task.getCronExpression());
 
             scheduleRegistry.createSchedule(task.getCode(), companyId)
                     .ifPresent(schedule -> {
-                        schedule.programarTarea();
+                        schedule.sheduleTask();
                         activeSchedules.put(key, schedule);
                         log.info("Schedule programado para {} - {}", task.getCode(), companyId);
                     });

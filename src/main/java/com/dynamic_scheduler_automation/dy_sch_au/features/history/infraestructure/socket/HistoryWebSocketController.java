@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,8 @@ import java.util.stream.Collectors;
 public class HistoryWebSocketController {
 
     private final MongoDatabase db;
+
+    private static final ZoneId COT_ZONE = ZoneId.of("America/Bogota");
 
     public HistoryWebSocketController(MongoDatabase db) {
         this.db = db;
@@ -61,32 +64,44 @@ public class HistoryWebSocketController {
                     try {
                         LocalDate localDate = LocalDate.parse(strVal); // ISO yyyy-MM-dd
 
-                        // SOLUCIÓN: Usar UTC para evitar problemas de zona horaria
-                        ZoneId utcZone = ZoneId.of("UTC");
-                        ZonedDateTime zStart = localDate.atStartOfDay(utcZone);
-                        ZonedDateTime zEnd = localDate.plusDays(1).atStartOfDay(utcZone);
+                        log.info("═══════════════════════════════════════");
+                        log.info("📅 DEBUG FILTRO DE FECHA");
+                        log.info("Fecha solicitada desde frontend: {}", strVal);
 
-                        Date start = Date.from(zStart.toInstant());
-                        Date end = Date.from(zEnd.toInstant());
+                        // MongoDB guarda fechas como "Mon Oct 20 00:00:00 COT 2025"
+                        // que internamente es "2025-10-20T05:00:00Z" (00:00 COT = 05:00 UTC)
+                        // Para buscar TODOS los registros del día 20 en COT, necesitamos:
+                        // Desde: 2025-10-20 00:00:00 COT → 2025-10-20T05:00:00Z
+                        // Hasta: 2025-10-21 00:00:00 COT → 2025-10-21T05:00:00Z
+
+                        ZoneId cotZone = ZoneId.of("America/Bogota");
+                        ZonedDateTime cotStart = localDate.atStartOfDay(cotZone);
+                        ZonedDateTime cotEnd = localDate.plusDays(1).atStartOfDay(cotZone);
+
+                        Date start = Date.from(cotStart.toInstant());
+                        Date end = Date.from(cotEnd.toInstant());
+
+                        log.info("Buscando rango en hora COT:");
+                        log.info("  - Inicio COT: {} → UTC: {} → Date: {}",
+                                cotStart, cotStart.toInstant(), start);
+                        log.info("  - Fin COT:    {} → UTC: {} → Date: {}",
+                                cotEnd, cotEnd.toInstant(), end);
 
                         bsonFilters.add(Filters.and(
                                 Filters.gte("executionDate", start),
                                 Filters.lt("executionDate", end)
                         ));
 
-                        // Log para debugging
-                        log.info("Filtro de fecha - Fecha solicitada: {}, Rango UTC: {} a {}",
-                                localDate, zStart, zEnd);
+                        log.info("═══════════════════════════════════════");
 
                     } catch (Exception ex) {
-                        log.warn("Formato de executionDate inválido: {}", strVal);
+                        log.warn("Formato de executionDate inválido: {}", strVal, ex);
                     }
                     continue;
                 }
 
                 // 2) Filtros por nombre de tarea -> buscar taskId(s)
                 if ("task.name".equals(key) || "taskName".equals(key)) {
-                    // buscar tasks cuyo nombre coincida con regex (case-insensitive)
                     FindIterable<Document> matchingTasks = taskCollection.find(
                             new Document("name", new Document("$regex", strVal).append("$options", "i"))
                     );
@@ -95,17 +110,13 @@ public class HistoryWebSocketController {
                         ObjectId oid = d.getObjectId("_id");
                         if (oid != null) taskIds.add(oid.toString());
                     });
-                    // si además la colección de tasks usa campo "id" no ObjectId, incluirlo también
                     if (taskIds.isEmpty()) {
-                        // intenta buscar por campo "id"
                         taskCollection.find(new Document("name", new Document("$regex", strVal).append("$options", "i")))
                                 .forEach(d -> {
                                     if (d.getString("id") != null) taskIds.add(d.getString("id"));
                                 });
                     }
-                    // si no hay matches, forzar consulta vacía
                     if (taskIds.isEmpty()) {
-                        // Búsqueda que no retorna nada
                         bsonFilters.add(Filters.eq("_id", "___NO_MATCH___"));
                     } else {
                         bsonFilters.add(Filters.in("taskId", taskIds));
@@ -138,7 +149,6 @@ public class HistoryWebSocketController {
                 }
 
                 // 4) Para cualquier otro campo (string) aplicamos regex (case-insensitive)
-                //    Si el campo tiene puntos (nested) lo dejamos tal cual.
                 bsonFilters.add(new Document(key, new Document("$regex", strVal).append("$options", "i")));
             }
 
@@ -150,6 +160,20 @@ public class HistoryWebSocketController {
             historyCollection.find(finalFilter).into(documents);
 
             int totalElements = documents.size();
+
+            log.info("🔍 Total de documentos encontrados: {}", totalElements);
+            if (!documents.isEmpty()) {
+                log.info("📄 Primeros 3 documentos encontrados:");
+                documents.stream().limit(3).forEach(doc -> {
+                    Date execDate = doc.getDate("executionDate");
+                    String dateStr = execDate != null ?
+                            execDate.toInstant().atZone(COT_ZONE).toLocalDate().toString() : "null";
+                    log.info("  - Fecha: {} (raw: {}), hora: {}",
+                            dateStr,
+                            execDate,
+                            doc.getString("executionHour"));
+                });
+            }
 
             // Orden descendente por fecha y hora
             documents.sort(Comparator.comparing((Document d) ->
@@ -175,7 +199,7 @@ public class HistoryWebSocketController {
             response.put("totalElements", totalElements);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("❌ Error en handleGetHistories", e);
             response.put("content", Collections.emptyList());
             response.put("totalElements", 0);
         }
@@ -241,7 +265,7 @@ public class HistoryWebSocketController {
                 .task(taskDto)
                 .company(companyDto)
                 .executionDate(doc.getDate("executionDate") != null
-                        ? doc.getDate("executionDate").toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        ? doc.getDate("executionDate").toInstant().atZone(COT_ZONE).toLocalDate()
                         : null)
                 .executionHour(doc.getString("executionHour"))
                 .executionTime(doc.getString("executionTime"))

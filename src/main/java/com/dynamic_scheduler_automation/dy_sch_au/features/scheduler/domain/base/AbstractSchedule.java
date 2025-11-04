@@ -33,7 +33,7 @@ public abstract class AbstractSchedule implements ProgramableTask {
 	    this.executionService = executionService;
 	}
 
-    public void programarTarea() {
+    public void sheduleTask() {
         String cronExpresion = schedulerConfig.getCronExpresion(getProcess(), getCompanyId());
 
         if (cronExpresion != null) {
@@ -65,7 +65,7 @@ public abstract class AbstractSchedule implements ProgramableTask {
         }
     }
 
-    public void cancelarTarea() {
+    public void cancelTask() {
         if (future != null && !future.isCancelled()) {
             future.cancel(true);
             log.info("Tarea cancelada para proceso {} y empresa {}",
